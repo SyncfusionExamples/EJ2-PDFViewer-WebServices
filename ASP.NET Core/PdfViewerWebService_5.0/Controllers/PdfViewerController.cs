@@ -46,7 +46,19 @@ namespace PdfViewerService2.Controllers
                     }
                     else
                     {
-                        return this.Content(jsonObject["document"] + " is not found");
+                        string fileName = jsonObject["document"].Split(new string[] { "://" }, StringSplitOptions.None)[0];
+
+                        if (fileName == "http" || fileName == "https")
+                        {
+                            WebClient WebClient = new WebClient();
+                            byte[] pdfDoc = WebClient.DownloadData(jsonObject["document"]);
+                            stream = new MemoryStream(pdfDoc);
+                        }
+
+                        else
+                        {
+                            return this.Content(jsonObject["document"] + " is not found");
+                        }
                     }
                 }
                 else
