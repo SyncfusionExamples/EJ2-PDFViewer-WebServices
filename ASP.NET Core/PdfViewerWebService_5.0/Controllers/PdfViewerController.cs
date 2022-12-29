@@ -6,6 +6,7 @@ using Syncfusion.EJ2.PdfViewer;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 
 namespace PdfViewerService2.Controllers
 {
