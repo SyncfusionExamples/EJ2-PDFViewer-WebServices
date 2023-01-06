@@ -26,6 +26,10 @@ builder.Services.AddResponseCompression();
 
 var app = builder.Build();
 
+//Register Syncfusion license
+string licenseKey = string.Empty;
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+
 app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthorization();

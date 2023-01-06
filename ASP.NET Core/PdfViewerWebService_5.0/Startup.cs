@@ -53,6 +53,10 @@ namespace PDFViewerWebService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //Register Syncfusion license
+            string licenseKey = string.Empty;
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(licenseKey);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
