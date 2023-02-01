@@ -196,7 +196,7 @@ namespace PdfViewerWebService_6._0.Controllers
         }
 
         [AcceptVerbs("Post")]
-        [HttpPost("Unload")]
+        [HttpPost("ExportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [Route("[controller]/ExportFormFields")]
         public IActionResult ExportFormFields([FromBody] Dictionary<string, string> jsonObject)
@@ -208,7 +208,7 @@ namespace PdfViewerWebService_6._0.Controllers
         }
 
         [AcceptVerbs("Post")]
-        [HttpPost("Unload")]
+        [HttpPost("ImportFormFields")]
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [Route("[controller]/ImportFormFields")]
         public IActionResult ImportFormFields([FromBody] Dictionary<string, string> jsonObject)
