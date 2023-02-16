@@ -24,12 +24,22 @@ namespace PdfViewerWebService_6._0.Controllers
             Console.WriteLine("PdfViewerController initialized");
         }
 
-        [HttpPost("Load")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/Load")]
-        //Post action for Loading the PDF documents   
-        public IActionResult Load([FromBody] Dictionary<string, string> jsonObject)
+        private string GetString(object o)
         {
+            if (o == null)
+                return "";
+
+            string? str = o == null ? "" : o.ToString();
+            return str == null ? "" : str;
+        }
+
+        [HttpPost]
+        [Route("Load")]
+        //Post action for Loading the PDF documents   
+        public IActionResult Load([FromBody] Dictionary<string, object> args)
+        {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));            
+
             Console.WriteLine("Load called");
             //Initialize the PDF viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
@@ -72,87 +82,83 @@ namespace PdfViewerWebService_6._0.Controllers
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("Bookmarks")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/Bookmarks")]
-        //Post action for processing the bookmarks from the PDF documents
-        public IActionResult Bookmarks([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("Bookmarks")]
+        //Post action for processing the bookmarks from the PDF documents
+        public IActionResult Bookmarks([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             var jsonResult = pdfviewer.GetBookmarks(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("RenderPdfPages")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/RenderPdfPages")]
-        //Post action for processing the PDF documents  
-        public IActionResult RenderPdfPages([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("RenderPdfPages")]
+        //Post action for processing the PDF documents  
+        public IActionResult RenderPdfPages([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object jsonResult = pdfviewer.GetPage(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("RenderPdfTexts")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/RenderPdfTexts")]
-        //Post action for processing the PDF texts  
-        public IActionResult RenderPdfTexts([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("RenderPdfTexts")]
+        //Post action for processing the PDF texts  
+        public IActionResult RenderPdfTexts([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object jsonResult = pdfviewer.GetDocumentText(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("RenderThumbnailImages")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/RenderThumbnailImages")]
-        //Post action for rendering the ThumbnailImages
-        public IActionResult RenderThumbnailImages([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("RenderThumbnailImages")]
+        //Post action for rendering the ThumbnailImages
+        public IActionResult RenderThumbnailImages([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object result = pdfviewer.GetThumbnailImages(jsonObject);
             return Content(JsonConvert.SerializeObject(result));
         }
-        [AcceptVerbs("Post")]
-        [HttpPost("RenderAnnotationComments")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/RenderAnnotationComments")]
-        //Post action for rendering the annotations
-        public IActionResult RenderAnnotationComments([FromBody] Dictionary<string, string> jsonObject)
+
+        [HttpPost]
+        [Route("RenderAnnotationComments")]
+        //Post action for rendering the annotations
+        public IActionResult RenderAnnotationComments([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object jsonResult = pdfviewer.GetAnnotationComments(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
-        [AcceptVerbs("Post")]
-        [HttpPost("ExportAnnotations")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/ExportAnnotations")]
-        //Post action to export annotations
-        public IActionResult ExportAnnotations([FromBody] Dictionary<string, string> jsonObject)
+
+        [HttpPost]
+        [Route("ExportAnnotations")]
+        //Post action to export annotations
+        public IActionResult ExportAnnotations([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             string jsonResult = pdfviewer.ExportAnnotation(jsonObject);
             return Content(jsonResult);
         }
-        [AcceptVerbs("Post")]
-        [HttpPost("ImportAnnotations")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/ImportAnnotations")]
-        //Post action to import annotations
-        public IActionResult ImportAnnotations([FromBody] Dictionary<string, string> jsonObject)
+
+        [HttpPost]
+        [Route("ImportAnnotations")]
+        //Post action to import annotations
+        public IActionResult ImportAnnotations([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             string jsonResult = string.Empty;
             object JsonResult;
@@ -195,62 +201,57 @@ namespace PdfViewerWebService_6._0.Controllers
             return Content(jsonResult);
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("ExportFormFields")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/ExportFormFields")]
-        public IActionResult ExportFormFields([FromBody] Dictionary<string, string> jsonObject)
-
+        [HttpPost]
+        [Route("ExportFormFields")]
+        public IActionResult ExportFormFields([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             string jsonResult = pdfviewer.ExportFormFields(jsonObject);
             return Content(jsonResult);
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("ImportFormFields")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/ImportFormFields")]
-        public IActionResult ImportFormFields([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("ImportFormFields")]
+        public IActionResult ImportFormFields([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             jsonObject["data"] = GetDocumentPath(jsonObject["data"]);
             object jsonResult = pdfviewer.ImportFormFields(jsonObject);
             return Content(JsonConvert.SerializeObject(jsonResult));
         }
 
-        [AcceptVerbs("Post")]
-        [HttpPost("Unload")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/Unload")]
-        //Post action for unloading and disposing the PDF document resources  
-        public IActionResult Unload([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("Unload")]
+        //Post action for unloading and disposing the PDF document resources  
+        public IActionResult Unload([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             pdfviewer.ClearCache(jsonObject);
             return this.Content("Document cache is cleared");
         }
 
-
-        [HttpPost("Download")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/Download")]
-        //Post action for downloading the PDF documents
-        public IActionResult Download([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("Download")]
+        //Post action for downloading the PDF documents
+        public IActionResult Download([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             string documentBase = pdfviewer.GetDocumentAsBase64(jsonObject);
             return Content(documentBase);
         }
 
-        [HttpPost("PrintImages")]
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [Route("[controller]/PrintImages")]
-        //Post action for printing the PDF documents
-        public IActionResult PrintImages([FromBody] Dictionary<string, string> jsonObject)
+        [HttpPost]
+        [Route("PrintImages")]
+        //Post action for printing the PDF documents
+        public IActionResult PrintImages([FromBody] Dictionary<string, object> args)
         {
+            Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => GetString(k.Value));
             //Initialize the PDF Viewer object with memory cache object
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object pageImage = pdfviewer.GetPrintImage(jsonObject);
@@ -273,19 +274,6 @@ namespace PdfViewerWebService_6._0.Controllers
             }
             Console.WriteLine(documentPath);
             return documentPath;
-        }
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
         }
     }
 }
