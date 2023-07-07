@@ -8,16 +8,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
-namespace PdfViewerWebService_6._0.Controllers
+namespace PdfViewerWebService
 {
     [Route("[controller]")]
     [ApiController]
-    public class PDFViewerController : ControllerBase
+    public class PdfViewerController : ControllerBase
     {
         private IWebHostEnvironment _hostingEnvironment;
         //Initialize the memory cache object   
         public IMemoryCache _cache;
-        public PDFViewerController(IWebHostEnvironment hostingEnvironment, IMemoryCache cache)
+        public PdfViewerController(IWebHostEnvironment hostingEnvironment, IMemoryCache cache)
         {
             _hostingEnvironment = hostingEnvironment;
             _cache = cache;
