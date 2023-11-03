@@ -154,8 +154,8 @@ namespace PdfViewerService2.Controllers
         [HttpPost("ImportAnnotations")]
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [Route("[controller]/ImportAnnotations")]
-        //Post action to import annotations
-        public IActionResult ImportAnnotations([FromBody] Dictionary<string, string> jsonObject)
+        //Post action to import annotations
+        public IActionResult ImportAnnotations([FromBody] Dictionary<string, string> jsonObject)
         {
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             string jsonResult = string.Empty;
@@ -166,6 +166,15 @@ namespace PdfViewerService2.Controllers
                 if (!string.IsNullOrEmpty(documentPath))
                 {
                     jsonResult = System.IO.File.ReadAllText(documentPath);
+                    string[] searchStrings = { "textMarkupAnnotation", "measureShapeAnnotation", "freeTextAnnotation", "stampAnnotations", "signatureInkAnnotation", "stickyNotesAnnotation", "signatureAnnotation", "AnnotationType" };
+                    bool isnewJsonFile = !searchStrings.Any(jsonResult.Contains);
+                    if (isnewJsonFile)
+                    {
+                        byte[] bytes = System.IO.File.ReadAllBytes(documentPath);
+                        jsonObject["importedData"] = Convert.ToBase64String(bytes);
+                        JsonResult = pdfviewer.ImportAnnotation(jsonObject);
+                        jsonResult = JsonConvert.SerializeObject(JsonResult);
+                    }
                 }
                 else
                 {
