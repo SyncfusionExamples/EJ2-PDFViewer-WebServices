@@ -143,6 +143,15 @@ app.MapPost("pdfviewer/ImportAnnotations", (Dictionary<string, object> args) =>
         if (!string.IsNullOrEmpty(documentPath))
         {
             jsonResult = System.IO.File.ReadAllText(documentPath);
+            string[] searchStrings = { "textMarkupAnnotation", "measureShapeAnnotation", "freeTextAnnotation", "stampAnnotations", "signatureInkAnnotation", "stickyNotesAnnotation", "signatureAnnotation", "AnnotationType" };
+            bool isnewJsonFile = !searchStrings.Any(jsonResult.Contains);
+            if (isnewJsonFile)
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes(documentPath);
+                jsonObject["importedData"] = Convert.ToBase64String(bytes);
+				JsonResult = pdfviewer.ImportAnnotation(jsonObject);
+            	return Results.Content(JsonConvert.SerializeObject(JsonResult));
+            }
         }
         else
         {
@@ -175,6 +184,7 @@ app.MapPost("pdfviewer/ImportAnnotations", (Dictionary<string, object> args) =>
     }
     return Results.Ok(jsonResult);
 });
+
 app.MapPost("pdfviewer/ExportFormFields", (Dictionary<string, object> args) =>
 {
     Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => k.Value?.ToString());

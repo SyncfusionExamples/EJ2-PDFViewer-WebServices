@@ -162,6 +162,15 @@ namespace PdfViewerService2.Controllers
                 if (!string.IsNullOrEmpty(documentPath))
                 {
                     jsonResult = System.IO.File.ReadAllText(documentPath);
+                    string[] searchStrings = { "textMarkupAnnotation", "measureShapeAnnotation", "freeTextAnnotation", "stampAnnotations", "signatureInkAnnotation", "stickyNotesAnnotation", "signatureAnnotation", "AnnotationType" };
+                    bool isnewJsonFile = !searchStrings.Any(jsonResult.Contains);
+                    if (isnewJsonFile)
+                    {
+                        byte[] bytes = System.IO.File.ReadAllBytes(documentPath);
+                        jsonObject["importedData"] = Convert.ToBase64String(bytes);
+                        JsonResult = pdfviewer.ImportAnnotation(jsonObject);
+                        jsonResult = JsonConvert.SerializeObject(JsonResult);
+                    }
                 }
                 else
                 {
