@@ -47,6 +47,45 @@ namespace MVCwebservice.webapi
         }
 
         [System.Web.Mvc.HttpPost]
+        public object ValidatePassword(Dictionary<string, string> jsonObject)
+        {
+            PdfRenderer pdfviewer = new PdfRenderer();
+            MemoryStream stream = new MemoryStream();
+            object jsonResult = new object();
+            if (jsonObject != null && jsonObject.ContainsKey("document"))
+            {
+                if (bool.Parse(jsonObject["isFileName"]))
+                {
+                    string documentPath = GetDocumentPath(jsonObject["document"]);
+                    if (!string.IsNullOrEmpty(documentPath))
+                    {
+                        byte[] bytes = System.IO.File.ReadAllBytes(documentPath);
+
+                        stream = new MemoryStream(bytes);
+
+                    }
+                    else
+                    {
+                        return (jsonObject["document"] + " is not found");
+                    }
+                }
+                else
+                {
+                    byte[] bytes = Convert.FromBase64String(jsonObject["document"]);
+                    stream = new MemoryStream(bytes);
+                }
+            }
+            string password = null;
+            if (jsonObject.ContainsKey("password"))
+            {
+                password = jsonObject["password"];
+            }
+            var result = pdfviewer.Load(stream, password);
+
+            return (JsonConvert.SerializeObject(result));
+        }
+
+        [System.Web.Mvc.HttpPost]
         public object Bookmarks(Dictionary<string, string> jsonObject)
         {
             PdfRenderer pdfviewer = new PdfRenderer();
