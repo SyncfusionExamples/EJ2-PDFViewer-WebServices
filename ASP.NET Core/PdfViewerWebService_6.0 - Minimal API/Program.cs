@@ -91,6 +91,53 @@ app.MapPost("pdfviewer/Load", (Dictionary<string, object> args) =>
     return Results.Ok(JsonConvert.SerializeObject(jsonResult));
 });
 
+app.MapPost("pdfviewer/ValidatePassword", (Dictionary<string, object> args) =>
+{
+    Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => k.Value?.ToString());
+    PdfRenderer pdfviewer = new PdfRenderer(_cache);
+    MemoryStream stream = new MemoryStream();
+    object jsonResult = new object();
+    if (jsonObject != null && jsonObject.ContainsKey("document"))
+    {
+
+        if (bool.Parse(jsonObject["isFileName"]))
+        {
+            string documentPath = GetDocumentPath(jsonObject["document"]);
+            if (!string.IsNullOrEmpty(documentPath))
+            {
+                byte[] bytes = System.IO.File.ReadAllBytes(documentPath);
+                stream = new MemoryStream(bytes);
+            }
+            else
+            {
+                string fileName = jsonObject["document"].Split("://")[0];
+                if (fileName == "http" || fileName == "https")
+                {
+                    WebClient webclient = new WebClient();
+                    byte[] pdfDoc = webclient.DownloadData(jsonObject["document"]);
+                    stream = new MemoryStream(pdfDoc);
+                }
+                else
+                {
+                    return Results.Ok(jsonObject["document"] + " is not found");
+                }
+            }
+        }
+        else
+        {
+            byte[] bytes = Convert.FromBase64String(jsonObject["document"]);
+            stream = new MemoryStream(bytes);
+        }
+    }
+    string password = null;
+    if (jsonObject.ContainsKey("password"))
+    {
+        password = jsonObject["password"];
+    }
+    var result = pdfviewer.Load(stream, password);
+    return Results.Ok(JsonConvert.SerializeObject(result));
+});
+
 app.MapPost("pdfviewer/RenderPdfPages", (Dictionary<string, object> args) =>
 {
     Dictionary<string, string> jsonObject = args.ToDictionary(k => k.Key, k => k.Value?.ToString());
