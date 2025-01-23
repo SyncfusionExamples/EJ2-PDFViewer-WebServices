@@ -17,7 +17,7 @@
 		<PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
-		<PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="28.1.41" />
+		<PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="*" />
 	</ItemGroup>
 
 	<ItemGroup>
