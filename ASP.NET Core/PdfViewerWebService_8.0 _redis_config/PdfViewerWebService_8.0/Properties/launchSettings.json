@@ -1,0 +1,34 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:62914",
+      "sslPort": 44338
+    }
+  },
+  "profiles": {
+    "PdfViewerWebService": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "pdfviewer",
+      "applicationUrl": "https://localhost:7255;http://localhost:5262",
+      "environmentVariables": {
+        "DOCUMENT_SLIDING_EXPIRATION_TIME": "10",
+        "REDIS_CACHE_CONNECTION_STRING": "",
+        "DOCUMENT_PATH": "",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "pdfviewer",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
