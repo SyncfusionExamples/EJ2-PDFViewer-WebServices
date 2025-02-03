@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace PdfViewerWebService_8
 {
@@ -64,7 +65,14 @@ namespace PdfViewerWebService_8
                 }
                 else
                 {
-                    byte[] bytes = Convert.FromBase64String(jsonObject["document"]);
+                    byte[] bytes;
+                    if (isValidBase64(jsonObject["document"]))
+                    {
+                        bytes = Convert.FromBase64String(jsonObject["document"]);
+                    } else
+                    {
+                        return this.Content(jsonObject["document"] + " is not found");
+                    }
                     stream = new MemoryStream(bytes);
                 }
             }
@@ -317,6 +325,25 @@ namespace PdfViewerWebService_8
             PdfRenderer pdfviewer = new PdfRenderer(_cache);
             object pageImage = pdfviewer.GetPrintImage(jsonObject);
             return Content(JsonConvert.SerializeObject(pageImage));
+        }
+
+        //checks the string is valid base64 or not
+        private bool isValidBase64(string document)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(document) || document.Length % 4 != 0)
+                {
+                    return false;
+                }
+
+                Regex base64Regex = new Regex(@"^[A-Za-z0-9+/=]+$");
+                return base64Regex.IsMatch(document);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         //Gets the path of the PDF document
