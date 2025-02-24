@@ -7,6 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Drawing;
+using Syncfusion.Pdf.Parsing;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Interactive;
+using Syncfusion.Pdf.Redaction;
+using System.Linq;
 
 namespace PdfViewerService2.Controllers
 {
@@ -318,7 +325,7 @@ namespace PdfViewerService2.Controllers
             return Content(JsonConvert.SerializeObject(pageImage));
         }
 
-        [HttpPost("Download")]
+        [HttpPost("Redaction")]
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [Route("[controller]/Redaction")]
         public IActionResult Redaction([FromBody] Dictionary<string, string> jsonObject)
