@@ -13,6 +13,11 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http;
+using Syncfusion.Pdf.Parsing;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Interactive;
+using Syncfusion.Pdf.Redaction;
 
 namespace ej2_pdfviewer_web_service.Controllers
 {
