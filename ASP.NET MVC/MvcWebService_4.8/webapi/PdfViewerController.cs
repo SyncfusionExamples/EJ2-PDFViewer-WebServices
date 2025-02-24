@@ -6,8 +6,28 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
+using System.Web.Caching;
 using System.Web.Http;
+using Syncfusion.Pdf.Parsing;
+using System.Security.Cryptography.X509Certificates;
+using Syncfusion.Pdf.Security;
+using Syncfusion.Pdf;
+using Syncfusion.ExcelToPdfConverter;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Presentation;
+using Syncfusion.PresentationToPdfConverter;
+using Syncfusion.XlsIO;
+using Syncfusion.DocIO;
+using Syncfusion.DocIO.DLS;
+using Syncfusion.OfficeChart;
+using Syncfusion.OfficeChartToImageConverter;
+using WFormatType = Syncfusion.DocIO.FormatType;
+using Syncfusion.DocToPDFConverter;
+using Syncfusion.Pdf.Interactive;
+using Syncfusion.Pdf.Redaction;
+using System.Drawing;
 
 namespace MVCwebservice.webapi
 {
@@ -224,6 +244,108 @@ namespace MVCwebservice.webapi
         }
 
         [System.Web.Mvc.HttpPost]
+        public object LoadFile(Dictionary<string, string> jsonObject)
+        {
+            if (jsonObject.ContainsKey("data"))
+            {
+                string base64 = jsonObject["data"];
+                //string fileName = args.FileData[0].Name; 
+                string type = jsonObject["type"];
+                string data = base64.Split(',')[1];
+                byte[] bytes = Convert.FromBase64String(data);
+                var outputStream = new MemoryStream();
+                Syncfusion.Pdf.PdfDocument pdfDocument = new Syncfusion.Pdf.PdfDocument();
+                using (Stream stream = new MemoryStream(bytes))
+                {
+                    switch (type)
+                    {
+                        case "docx":
+                        case "dot":
+                        case "doc":
+                        case "dotx":
+                        case "docm":
+                        case "dotm":
+                        case "rtf":
+                            Syncfusion.DocIO.DLS.WordDocument doc = new Syncfusion.DocIO.DLS.WordDocument(stream, GetWFormatType(type));
+                            //Initialization of DocIORenderer for Word to PDF conversion
+                            DocToPDFConverter converter = new DocToPDFConverter();
+                            //Converts Word document into PDF document
+                            pdfDocument = converter.ConvertToPDF(doc);
+                            doc.Close();
+                            break;
+                        case "pptx":
+                        case "pptm":
+                        case "potx":
+                        case "potm":
+                            //Loads or open an PowerPoint Presentation
+                            IPresentation pptxDoc = Presentation.Open(stream);
+                            pdfDocument = PresentationToPdfConverter.Convert(pptxDoc);
+                            pptxDoc.Close();
+                            break;
+                        case "xlsx":
+                        case "xls":
+                            ExcelEngine excelEngine = new ExcelEngine();
+                            //Loads or open an existing workbook through Open method of IWorkbooks
+                            IWorkbook workbook = excelEngine.Excel.Workbooks.Open(stream);
+                            //Initialize XlsIO renderer.
+                            ExcelToPdfConverter Excelconverter = new ExcelToPdfConverter(workbook);
+                            //Convert Excel document into PDF document
+                            pdfDocument = Excelconverter.Convert();
+                            workbook.Close();
+                            break;
+                        case "jpeg":
+                        case "jpg":
+                        case "png":
+                        case "bmp":
+                            //Add a page to the document
+                            PdfPage page = pdfDocument.Pages.Add();
+                            //Create PDF graphics for the page
+                            PdfGraphics graphics = page.Graphics;
+                            PdfBitmap image = new PdfBitmap(stream);
+                            //Draw the image
+                            graphics.DrawImage(image, 0, 0);
+                            break;
+                        case "pdf":
+                            string pdfBase64String = Convert.ToBase64String(bytes);
+                            return (GetPlainText("data:application/pdf;base64," + pdfBase64String));
+                    }
+                }
+                pdfDocument.Save(outputStream);
+                outputStream.Position = 0;
+                byte[] byteArray = outputStream.ToArray();
+                pdfDocument.Close();
+                outputStream.Close();
+                string base64String = Convert.ToBase64String(byteArray);
+                return (GetPlainText("data:application/pdf;base64," + base64String));
+            }
+            return (GetPlainText("data:application/pdf;base64," + ""));
+        }
+
+        public static WFormatType GetWFormatType(string format)
+        {
+            if (string.IsNullOrEmpty(format))
+                throw new NotSupportedException("This is not a valid Word documnet.");
+            switch (format.ToLower())
+            {
+                case "dotx":
+                    return WFormatType.Dotx;
+                case "docx":
+                    return WFormatType.Docx;
+                case "docm":
+                    return WFormatType.Docm;
+                case "dotm":
+                    return WFormatType.Dotm;
+                case "dot":
+                    return WFormatType.Dot;
+                case "doc":
+                    return WFormatType.Doc;
+                case "rtf":
+                    return WFormatType.Rtf;
+                default:
+                    throw new NotSupportedException("This is not a valid Word documnet.");
+            }
+        }
+        [System.Web.Mvc.HttpPost]
         public object Redaction(Dictionary<string, string> jsonObject)
         {
             string RedactionText = "Redacted";
@@ -275,29 +397,29 @@ namespace MVCwebservice.webapi
                                     removeItems.Add(annotation);
                                     // Create a new redaction with the annotation bounds and color
                                     PdfRedaction redaction = new PdfRedaction(annotation.Bounds);
-                                    Syncfusion.Drawing.RectangleF rect = new Syncfusion.Drawing.RectangleF(0, 0, 8, 8);
+                                    RectangleF rect = new RectangleF(0, 0, 8, 8);
                                     PdfTilingBrush tillingBrush = new PdfTilingBrush(rect);
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Gray, new Syncfusion.Drawing.RectangleF(0, 0, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new Syncfusion.Drawing.RectangleF(2, 0, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(4, 0, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new Syncfusion.Drawing.RectangleF(6, 0, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new Syncfusion.Drawing.RectangleF(0, 2, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(2, 2, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new Syncfusion.Drawing.RectangleF(4, 2, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(6, 2, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(0, 4, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new Syncfusion.Drawing.RectangleF(2, 4, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(4, 4, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new Syncfusion.Drawing.RectangleF(6, 4, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new Syncfusion.Drawing.RectangleF(0, 6, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new Syncfusion.Drawing.RectangleF(2, 6, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new Syncfusion.Drawing.RectangleF(4, 6, 2, 2));
-                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new Syncfusion.Drawing.RectangleF(6, 6, 2, 2));
-                                    rect = new Syncfusion.Drawing.RectangleF(0, 0, 16, 14);
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Gray, new RectangleF(0, 0, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new RectangleF(2, 0, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(4, 0, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new RectangleF(6, 0, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new RectangleF(0, 2, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(2, 2, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new RectangleF(4, 2, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(6, 2, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(0, 4, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new RectangleF(2, 4, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(4, 4, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.White, new RectangleF(6, 4, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new RectangleF(0, 6, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.LightGray, new RectangleF(2, 6, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.Black, new RectangleF(4, 6, 2, 2));
+                                    tillingBrush.Graphics.DrawRectangle(PdfBrushes.DarkGray, new RectangleF(6, 6, 2, 2));
+                                    rect = new RectangleF(0, 0, 16, 14);
                                     PdfTilingBrush tillingBrushNew = new PdfTilingBrush(rect);
                                     tillingBrushNew.Graphics.DrawRectangle(tillingBrush, rect);
                                     //Set the pattern for the redaction area
-                                    redaction.Appearance.Graphics.DrawRectangle(tillingBrushNew, new Syncfusion.Drawing.RectangleF(0, 0, annotation.Bounds.Width, annotation.Bounds.Height));
+                                    redaction.Appearance.Graphics.DrawRectangle(tillingBrushNew, new RectangleF(0, 0, annotation.Bounds.Width, annotation.Bounds.Height));
                                     // Add the redaction to the page
                                     loadedPage.AddRedaction(redaction);
                                     annotation.Flatten = true;
@@ -307,13 +429,16 @@ namespace MVCwebservice.webapi
                             {
                                 if (annotation.Author == "Image")
                                 {
-                                    Stream[] images = PdfLoadedRubberStampAnnotationExtension.GetImages(annotation as PdfLoadedRubberStampAnnotation);
-                                    // Create a new redaction with the annotation bounds and color
+                                    //Get the existing rubber stamp annotation.
+                                    PdfLoadedRubberStampAnnotation rubberStampAnnotation = annotation as PdfLoadedRubberStampAnnotation;
+                                    //Get the custom images used for the rubber stamp annotation.
+                                    Image[] images = rubberStampAnnotation.GetImages();
+
                                     PdfRedaction redaction = new PdfRedaction(annotation.Bounds);
-                                    images[0].Position = 0;
+                                    //images[0].Position = 0;
                                     PdfImage image = new PdfBitmap(images[0]);
                                     //Apply the image to redaction area
-                                    redaction.Appearance.Graphics.DrawImage(image, new Syncfusion.Drawing.RectangleF(0, 0, annotation.Bounds.Width, annotation.Bounds.Height));
+                                    redaction.Appearance.Graphics.DrawImage(image, new RectangleF(0, 0, annotation.Bounds.Width, annotation.Bounds.Height));
                                     // Add the redaction to the page
                                     loadedPage.AddRedaction(redaction);
                                     annotation.Flatten = true;
@@ -333,11 +458,57 @@ namespace MVCwebservice.webapi
                     byteArray = stream.ToArray();
                     finalbase64 = "data:application/pdf;base64," + Convert.ToBase64String(byteArray);
                     stream.Dispose();
-                    return (finalbase64);
+                    return GetPlainText(finalbase64);
                 }
             }
 
-            return ("data:application/pdf;base64," + "");
+            return GetPlainText("data:application/pdf;base64," + "");
+        }
+
+        //The Method used for apply the text in the full area of redaction rectangle
+        private static void CreateRedactionAppearance(PdfGraphics graphics, PdfTextAlignment alignment, bool repeat, SizeF size, string overlayText, PdfFont font, PdfBrush textcolor)
+        {
+            float col = 0, row;
+            if (font == null) font = new PdfStandardFont(PdfFontFamily.Helvetica, 10);
+            int textAlignment = Convert.ToInt32(alignment);
+            float y = 0, x = 0, diff = 0;
+            RectangleF rect;
+            SizeF textsize = font.MeasureString(overlayText);
+            if (repeat)
+            {
+                col = size.Width / textsize.Width;
+                row = (float)Math.Floor(size.Height / font.Size);
+                diff = Math.Abs(size.Width - (float)(Math.Floor(col) * textsize.Width));
+                if (textAlignment == 1)
+                    x = diff / 2;
+                if (textAlignment == 2)
+                    x = diff;
+                for (int i = 1; i < col; i++)
+                {
+                    for (int j = 0; j < row; j++)
+                    {
+                        rect = new RectangleF(x, y, 0, 0);
+                        graphics.DrawString(overlayText, font, textcolor, rect);
+                        y = y + font.Size;
+                    }
+                    x = x + textsize.Width;
+                    y = 0;
+                }
+            }
+            else
+            {
+                diff = Math.Abs(size.Width - textsize.Width);
+                if (textAlignment == 1)
+                {
+                    x = diff / 2;
+                }
+                if (textAlignment == 2)
+                {
+                    x = diff;
+                }
+                rect = new RectangleF(x, 0, 0, 0);
+                graphics.DrawString(overlayText, font, textcolor, rect);
+            }
         }
 
         private HttpResponseMessage GetPlainText(string pageImage)
