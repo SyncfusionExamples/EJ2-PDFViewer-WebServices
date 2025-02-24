@@ -4,6 +4,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Syncfusion.EJ2.PdfViewer;
 using System.Net;
+using System.Drawing;
+using Syncfusion.Pdf.Parsing;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Pdf.Interactive;
+using Syncfusion.Pdf.Redaction;
 
 var builder = WebApplication.CreateBuilder(args);
 var MyAllowSpecificOrigins = "MyPolicy";
@@ -382,11 +388,11 @@ app.MapPost("pdfviewer/Redaction", (Dictionary<string, object> args) =>
             byteArray = stream.ToArray();
             finalbase64 = "data:application/pdf;base64," + Convert.ToBase64String(byteArray);
             stream.Dispose();
-            return Content(finalbase64);
+            return finalbase64;
         }
     }
 
-    return Content("data:application/pdf;base64," + "");
+    return "data:application/pdf;base64," + "";
 });
 
 //The Method used for apply the text in the full area of redaction rectangle
