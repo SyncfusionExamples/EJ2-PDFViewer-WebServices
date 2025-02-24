@@ -18,6 +18,12 @@ builder.Services.AddCors(options =>
                         });
 });
 
+// Configure Kestrel options
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 52428800; // 50 MB
+});
+
 builder.Services.AddMemoryCache();
 builder.Services.AddEndpointsApiExplorer();
 
