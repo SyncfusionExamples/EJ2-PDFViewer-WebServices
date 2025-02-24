@@ -9,7 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.0" />
-    <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="*" />
+	  <PackageReference Include="Syncfusion.Compression.Net.Core" Version="*" />
+	  <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="*" />
+	  <PackageReference Include="Syncfusion.EJ2.PdfViewer.AspNet.Core" Version="*" />
+	  <PackageReference Include="Syncfusion.Pdf.Net.Core" Version="*" />
+	  <PackageReference Include="Syncfusion.Pdf.Imaging.Net.Core" Version="*" />
   </ItemGroup>
 
 </Project>
