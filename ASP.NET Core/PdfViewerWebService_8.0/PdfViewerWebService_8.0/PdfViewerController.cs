@@ -25,6 +25,10 @@ using Microsoft.AspNetCore.Cors;
 using Syncfusion.Pdf.Interactive;
 using Syncfusion.Pdf.Redaction;
 using Syncfusion.Drawing;
+using PdfGraphicsType = Syncfusion.Pdf.Graphics.PdfGraphics;
+using PdfFontType = Syncfusion.Pdf.Graphics.PdfFont;
+using PdfBrushType = Syncfusion.Pdf.Graphics.PdfBrush;
+using SizeFType = Syncfusion.Drawing.SizeF;
 
 namespace PdfViewerWebService_8
 {
@@ -457,7 +461,7 @@ namespace PdfViewerWebService_8
         }
 
         //The Method used for apply the text in the full area of redaction rectangle
-        private static void CreateRedactionAppearance(PdfGraphics graphics, PdfTextAlignment alignment, bool repeat, SizeF size, string overlayText, PdfFont font, PdfBrush textcolor)
+        private static void CreateRedactionAppearance(PdfGraphicsType graphics, PdfTextAlignment alignment, bool repeat, SizeFType size, string overlayText, PdfFontType font, PdfBrushType textcolor)
         {
             float col = 0, row;
             if (font == null) font = new PdfStandardFont(PdfFontFamily.Helvetica, 10);
