@@ -2,7 +2,7 @@
 
 EJ2 PDF Viewer client-side libraries have server-side dependency to get the details from PDF documents for rendering. This repository contains the EJ2 PDF Viewer web services that perform server-side preprocessing of the PDF document to be rendered on the client-side.
 
-EJ2 PDF Viewer web services in ASP.NET Core and ASP.NET MVC can be created with the help of the following UG and KB links.
+EJ2 PDF Viewer web services in ASP.NET Core and ASP.NET MVC can be created with the help of the following user guide (UG) and knowledge base (KB) articles:
 
 **ASP.NET Core:**
 * [How to create PDF Viewer web service application in ASP.NET Core](https://www.syncfusion.com/kb/10346/how-to-create-pdf-viewer-web-service-application-in-asp-net-core)
